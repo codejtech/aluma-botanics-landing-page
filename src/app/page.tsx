@@ -1,6 +1,9 @@
 import { Countdown } from './components/countdown';
 import { SignupForm } from './components/signup-form';
-import { SCRUB_STUDIO_URL } from './lib/constants';
+import { SCRUB_STUDIO_URL, LAUNCH_DATE_ISO } from './lib/constants';
+import { formatLaunchDate } from './lib/utils';
+
+const launchDateFormatted = formatLaunchDate(LAUNCH_DATE_ISO);
 
 export default function HomePage() {
   return (
@@ -19,7 +22,7 @@ export default function HomePage() {
 
           <p className="mx-auto mt-[22px] max-w-[700px] font-sans text-[1.05rem] leading-[1.8] text-black/70">
             A softer ritual. A fresh botanical glow. Be first to experience the
-            new Aluma Botanics vibe when we launch on June 1.
+            new Aluma Botanics vibe when we launch on {launchDateFormatted}.
           </p>
 
           <Countdown />
