@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   title: `${SITE_NAME} | Coming Soon`,
   description:
     'A softer ritual. A fresh botanical glow. Join the Aluma Botanics launch list.',
+    icons: {
+      icon: [
+        {
+          url: 'aluma-botanics-favicon.svg', type: 'image/svg+xml',
+        },
+      ]
+
+    },
 };
 
 export default function RootLayout({

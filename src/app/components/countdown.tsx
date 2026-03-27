@@ -9,6 +9,15 @@ type CountdownUnit = {
   value: string;
 };
 
+function getZeroState(): CountdownUnit[] {
+  return [
+    { label: 'Days', value: '00' },
+    { label: 'Hours', value: '00' },
+    { label: 'Minutes', value: '00' },
+    { label: 'Seconds', value: '00' },
+  ];
+}
+
 function getTimeLeft(targetDate: Date) {
   const now = new Date();
   const distance = targetDate.getTime() - now.getTime();
@@ -16,7 +25,7 @@ function getTimeLeft(targetDate: Date) {
   if (distance <= 0) {
     return {
       done: true,
-      values: [],
+      values: getZeroState(),
     };
   }
 
@@ -39,30 +48,62 @@ function getTimeLeft(targetDate: Date) {
 export function Countdown() {
   const targetDate = useMemo(() => new Date(LAUNCH_DATE_ISO), []);
 
-  const [state, setState] = useState(() =>
-    getTimeLeft(targetDate),
-  );
+  const [mounted, setMounted] = useState(false);
+  const [state, setState] = useState<{
+    done: boolean;
+    values: CountdownUnit[];
+  }>({
+    done: false,
+    values: getZeroState(),
+  });
 
   useEffect(() => {
-    const timer = setInterval(() => {
+    setMounted(true);
+
+    const update = () => {
       setState(getTimeLeft(targetDate));
-    }, 1000);
+    };
+
+    update();
+
+    const timer = setInterval(update, 1000);
 
     return () => clearInterval(timer);
   }, [targetDate]);
 
-  // 🎯 When countdown is finished
+  if (!mounted) {
+    return (
+      <div
+        aria-label="Countdown to launch"
+        className="mx-auto mt-10 grid w-full max-w-[620px] grid-cols-2 gap-4 md:grid-cols-4"
+      >
+        {getZeroState().map((item) => (
+          <div
+            key={item.label}
+            className="rounded-[28px] border border-[#D2BD7F66] bg-white/80 px-4 py-6 text-center shadow-[0_10px_30px_rgba(0,0,0,0.04)] backdrop-blur"
+          >
+            <div className="text-[clamp(2rem,4vw,2.7rem)] font-semibold leading-none font-sans">
+              {item.value}
+            </div>
+            <div className="mt-2.5 text-[11px] uppercase tracking-[0.25em] text-black/50 font-sans">
+              {item.label}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   if (state.done) {
     return (
       <div className="mt-10 text-center">
-        <p className="font-serif text-3xl md:text-4xl font-medium">
+        <p className="font-serif text-3xl font-medium md:text-4xl">
           Ready to launch ✨🚀!
         </p>
       </div>
     );
   }
 
-  // ⏳ Otherwise show countdown
   return (
     <div
       aria-label="Countdown to launch"
@@ -80,7 +121,7 @@ export function Countdown() {
             {item.label}
           </div>
         </div>
-      ))}
-    </div>
+        ))}
+      </div>
   );
 }
